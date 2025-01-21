@@ -9,31 +9,31 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
- @import url('reset.css');
+@import url('reset.css');
 
- :root {
-   /* nav height */
-   --nav-height: 64px;
- }
- 
- body {
-   display: none;
- }
- 
- body.appear {
-   display: block;
- }
- 
- header {
-   height: var(--nav-height);
- }
- 
- header .header,
- footer .footer {
-   visibility: hidden;
- 
-   &[data-block-status="loaded"] {
-     visibility: visible;
-   }
- }
+:root {
+  /* nav height */
+  --nav-height: 64px;
+}
+
+body {
+  display: none;
+}
+
+body.appear {
+  display: block;
+}
+
+header {
+  height: var(--nav-height);
+}
+
+header .header,
+footer .footer {
+  visibility: hidden;
+
+  &[data-block-status="loaded"] {
+    visibility: visible;
+  }
+}
  
