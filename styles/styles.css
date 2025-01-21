@@ -78,6 +78,7 @@ body {
   font-family: var(--body-font-family);
   font-size: var(--body-font-size-m);
   line-height: 1.6;
+  font-size: .875rem;
 }
 
 body.appear {
@@ -249,9 +250,75 @@ main > .section:first-of-type {
 }
 
 /* section metadata */
-main .section.light,
+/* main .section.light,
 main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+} */
+
+.section {
+  &.highlight {
+    padding: 3em 15px;
+    margin-bottom: 1.5em;
+    text-align: center;
+
+    & .default-content-wrapper {
+      margin: 0 auto;
+      max-width: 1400px;
+      padding-inline: 0;
+
+      > *:last-child {
+        margin-bottom: 0;
+      }
+    }
+
+    h2 {
+      font-size: 1.625rem;
+      font-style: italic;
+      margin: 0;
+    }
+
+    p {
+      font-size: 0.875rem;
+      margin: 0 0 1.5em;
+    }
+
+    a {
+      text-decoration: underline;
+    }
+
+    ul {
+      padding-left: 0;
+      margin: 0 0 1.5em;
+      list-style-position: inside;
+    }
+
+    picture {
+      display: block;
+      text-align: center;
+    }
+
+    @media (min-width: 48em) {
+      margin-bottom: 3em;
+      padding-inline: 20px;
+    }
+
+    @media (min-width: 64em) {
+      text-align: left;
+    }
+
+    &.background-blue {
+      background: #388ce1;
+      color: rgb(255 255 255 / 80%);
+
+      h2 {
+        color: #fff;
+      }
+
+      a {
+        color: #fff;
+      }
+    }
+  }
 }
