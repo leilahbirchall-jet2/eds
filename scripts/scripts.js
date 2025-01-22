@@ -12,7 +12,7 @@ import {
   loadSections,
   loadCSS,
   readBlockConfig,
-  toCamelCase
+  toCamelCase,
 } from './aem.js';
 
 /**
@@ -56,35 +56,36 @@ function buildAutoBlocks(main) {
 }
 
 /**
- * Reads the 'Layout' key from section metadata, 
+ * Reads the 'Layout' key from section metadata,
  * specifically with the 'columns' value.
- * 
- * This will look for a table inside of the 'columns' 
+ *
+ * This will look for a table inside of the 'columns'
  * value, specifing the widths to display the columns at.
- * Once found, these are converted into --left and --right 
+ * Once found, these are converted into --left and --right
  * CSS variables to apply to the section element for use in
  * the {@link buildLayoutContainer} function.
- * 
+ *
  * @param {Element} main The container element
  */
 function readLayoutMeta(main) {
-  const checkColumnExists = (column, name) => 
-    column && column.innerHTML.toLowerCase().includes(name);
+  const checkColExists = (column, name) => column && column.innerHTML.toLowerCase().includes(name);
 
   main.querySelectorAll(':scope > div').forEach((section) => {
     const sectionMeta = section.querySelector('div.section-metadata');
 
     if (sectionMeta) {
-      const key = 'layout';
-      const value = 'columns';
-      const blockConfig = readBlockConfig(sectionMeta);
+      const sectionMetaConfig = readBlockConfig(sectionMeta);
+      const configKey = 'layout';
+      const configValue = 'columns';
+      const hasLayoutConfig = Object.prototype.hasOwnProperty.call(sectionMetaConfig, configKey);
+      const hasColumnsConfig = sectionMetaConfig[configKey] === configValue;
 
-      if (blockConfig.hasOwnProperty(key) && blockConfig[key] === value) {
+      if (hasLayoutConfig && hasColumnsConfig) {
         sectionMeta.querySelectorAll(':scope > div').forEach((row) => {
           if (row.children) {
             const cols = [...row.children];
-            const equalToLayout = checkColumnExists(cols[0], key);
-            const equalToColumns = checkColumnExists(cols[1], value);
+            const equalToLayout = checkColExists(cols[0], configKey);
+            const equalToColumns = checkColExists(cols[1], configValue);
 
             if (equalToLayout && equalToColumns) {
               const col = cols[1];
@@ -92,11 +93,11 @@ function readLayoutMeta(main) {
               if (col.querySelector('table')) {
                 const table = col.querySelector('table');
                 const tableData = table.querySelectorAll('td');
-                [...tableData].map((value, index) => {
+                [...tableData].forEach((value, index) => {
                   const varName = `--${index === 0 ? 'left' : 'right'}`;
                   section.style.setProperty(varName, value.innerHTML);
                 });
-                section.dataset[toCamelCase(key)] = blockConfig[key];
+                section.dataset[toCamelCase(configKey)] = sectionMetaConfig[configKey];
               }
             }
           }
@@ -107,9 +108,9 @@ function readLayoutMeta(main) {
 }
 
 /**
- * Builds two column grid, dependent 
+ * Builds two column grid, dependent
  * on 'Layout' section metadata.
- * 
+ *
  * @param {Element} main The container element
  */
 function buildLayoutContainer(main) {
@@ -118,7 +119,7 @@ function buildLayoutContainer(main) {
     div.classList.add('grid-column');
     div.append(content);
     return div;
-  }
+  };
 
   main.querySelectorAll(':scope > .section[data-layout="columns"]').forEach((section) => {
     const wrapper = document.createElement('div');
