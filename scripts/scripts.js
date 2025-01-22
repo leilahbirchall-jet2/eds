@@ -11,6 +11,8 @@ import {
   loadSection,
   loadSections,
   loadCSS,
+  readBlockConfig,
+  toCamelCase
 } from './aem.js';
 
 /**
@@ -54,6 +56,88 @@ function buildAutoBlocks(main) {
 }
 
 /**
+ * Reads the 'Layout' key from section metadata, 
+ * specifically with the 'columns' value.
+ * 
+ * This will look for a table inside of the 'columns' 
+ * value, specifing the widths to display the columns at.
+ * Once found, these are converted into --left and --right 
+ * CSS variables to apply to the section element for use in
+ * the {@link buildLayoutContainer} function.
+ * 
+ * @param {Element} main The container element
+ */
+function readLayoutMeta(main) {
+  const checkColumnExists = (column, name) => 
+    column && column.innerHTML.toLowerCase().includes(name);
+
+  main.querySelectorAll(':scope > div').forEach((section) => {
+    const sectionMeta = section.querySelector('div.section-metadata');
+
+    if (sectionMeta) {
+      const key = 'layout';
+      const value = 'columns';
+      const blockConfig = readBlockConfig(sectionMeta);
+
+      if (blockConfig.hasOwnProperty(key) && blockConfig[key] === value) {
+        sectionMeta.querySelectorAll(':scope > div').forEach((row) => {
+          if (row.children) {
+            const cols = [...row.children];
+            const equalToLayout = checkColumnExists(cols[0], key);
+            const equalToColumns = checkColumnExists(cols[1], value);
+
+            if (equalToLayout && equalToColumns) {
+              const col = cols[1];
+
+              if (col.querySelector('table')) {
+                const table = col.querySelector('table');
+                const tableData = table.querySelectorAll('td');
+                [...tableData].map((value, index) => {
+                  const varName = `--${index === 0 ? 'left' : 'right'}`;
+                  section.style.setProperty(varName, value.innerHTML);
+                });
+                section.dataset[toCamelCase(key)] = blockConfig[key];
+              }
+            }
+          }
+        });
+      }
+    }
+  });
+}
+
+/**
+ * Builds two column grid, dependent 
+ * on 'Layout' section metadata.
+ * 
+ * @param {Element} main The container element
+ */
+function buildLayoutContainer(main) {
+  const createDiv = (content) => {
+    const div = document.createElement('div');
+    div.classList.add('grid-column');
+    div.append(content);
+    return div;
+  }
+
+  main.querySelectorAll(':scope > .section[data-layout="columns"]').forEach((section) => {
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('default-content-wrapper');
+
+    if (section.children.length === 2) {
+      const leftContent = section.children[0];
+      const rightContent = section.children[1];
+
+      const leftDiv = createDiv(leftContent);
+      const rightDiv = createDiv(rightContent);
+
+      wrapper.append(leftDiv, rightDiv);
+      section.append(wrapper);
+    }
+  });
+}
+
+/**
  * Decorates the main element.
  * @param {Element} main The main element
  */
@@ -63,8 +147,10 @@ export function decorateMain(main) {
   decorateButtons(main);
   decorateIcons(main);
   buildAutoBlocks(main);
+  readLayoutMeta(main);
   decorateSections(main);
   decorateBlocks(main);
+  buildLayoutContainer(main);
 }
 
 /**
