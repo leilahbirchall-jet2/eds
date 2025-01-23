@@ -94,8 +94,11 @@ function readLayoutMeta(main) {
                 const table = col.querySelector('table');
                 const tableData = table.querySelectorAll('td');
                 [...tableData].forEach((value, index) => {
-                  const varName = `--${index === 0 ? 'left' : 'right'}`;
-                  section.style.setProperty(varName, value.innerHTML);
+                  const varName = `--${index === 0 ? 'layout-column-left' : 'layout-column-right'}`;
+                  const width = value.innerHTML;
+                  if (width.endsWith('%')) {
+                    section.style.setProperty(varName, value.innerHTML);
+                  } 
                 });
                 section.dataset[toCamelCase(configKey)] = sectionMetaConfig[configKey];
               }
@@ -116,7 +119,7 @@ function readLayoutMeta(main) {
 function buildLayoutContainer(main) {
   const createDiv = (content) => {
     const div = document.createElement('div');
-    div.classList.add('grid-column');
+    div.classList.add('layout-column');
     div.append(content);
     return div;
   };

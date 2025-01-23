@@ -112,12 +112,12 @@ footer .footer {
       flex-direction: column;
       gap: 20px;
 
-      & .grid-column:first-of-type {
-        width: var(--left);
+      & .layout-column:first-of-type {
+        width: var(--layout-column-left);
       }
 
-      & .grid-column:last-of-type {
-        width: var(--right);
+      & .layout-column:last-of-type {
+        width: var(--layout-column-right);
       }
     }
 
