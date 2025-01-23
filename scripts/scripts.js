@@ -98,7 +98,7 @@ function readLayoutMeta(main) {
                   const width = value.innerHTML;
                   if (width.endsWith('%')) {
                     section.style.setProperty(varName, value.innerHTML);
-                  } 
+                  }
                 });
                 section.dataset[toCamelCase(configKey)] = sectionMetaConfig[configKey];
               }
